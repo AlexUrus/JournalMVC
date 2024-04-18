@@ -10,8 +10,13 @@ namespace JournalMVC.Models
 
         [ForeignKey(nameof(Type))]
         public int TypeId { get; set; }
+
+        [ForeignKey(nameof(TimeInterval))]
+        public int TimeIntervalId { get; set; }
         public string Description { get; set; }
+        
 
         public TypeActivity Type { get; set; }
+        public TimeInterval TimeInterval { get; set; }
     }
 }

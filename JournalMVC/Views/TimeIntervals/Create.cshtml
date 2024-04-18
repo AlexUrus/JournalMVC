@@ -1,4 +1,4 @@
-﻿@model JournalMVC.Models.TimeInterval
+﻿@model JournalMVC.DTO.TimeIntervalDTO
 
 @{
     ViewData["Title"] = "Create";
@@ -11,16 +11,18 @@
 <div class="row">
     <div class="col-md-4">
         <form asp-action="Create">
-            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+
             <div class="form-group">
-                <label asp-for="StartActivity" class="control-label"></label>
-                <input asp-for="StartActivity" class="form-control" />
-                <span asp-validation-for="StartActivity" class="text-danger"></span>
+                <div class="col-md-10">
+                    <label asp-for="StartActivity" class="control-label"></label>
+                    <input asp-for="StartActivity" class="form-control" />
+                </div>
             </div>
             <div class="form-group">
-                <label asp-for="EndActivity" class="control-label"></label>
-                <input asp-for="EndActivity" class="form-control" />
-                <span asp-validation-for="EndActivity" class="text-danger"></span>
+                <div class="col-md-10">
+                    <label asp-for="EndActivity" class="control-label"></label>
+                    <input asp-for="EndActivity" class="form-control" />
+                </div>
             </div>
             <div class="form-group">
                 <input type="submit" value="Create" class="btn btn-primary" />

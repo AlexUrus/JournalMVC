@@ -7,6 +7,8 @@ using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using JournalMVC.Database;
 using JournalMVC.Models;
+using JournalMVC.DTO;
+using Microsoft.AspNetCore.Razor.Language.CodeGeneration;
 
 namespace JournalMVC.Controllers
 {
@@ -54,8 +56,15 @@ namespace JournalMVC.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("Id,StartActivity,EndActivity")] TimeInterval timeInterval)
+        public async Task<IActionResult> Create([Bind("Id,StartActivity,EndActivity")] TimeIntervalDTO timeIntervalDTO)
         {
+            TimeInterval timeInterval = new TimeInterval()
+            {
+                Id = timeIntervalDTO.Id,
+                StartActivity = timeIntervalDTO.StartActivity.TimeOfDay,
+                EndActivity = timeIntervalDTO.EndActivity.TimeOfDay
+            };
+
             _context.Add(timeInterval);
             await _context.SaveChangesAsync();
             return RedirectToAction(nameof(Index));

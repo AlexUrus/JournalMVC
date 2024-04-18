@@ -14,6 +14,7 @@ namespace JournalMVC.Controllers
     {
         private readonly ApplicationContext _context;
 
+
         public ActivitiesController(ApplicationContext context)
         {
             _context = context;
@@ -22,7 +23,7 @@ namespace JournalMVC.Controllers
         // GET: Activities
         public async Task<IActionResult> Index()
         {
-            var applicationContext = _context.Activities.Include(a => a.Type);
+            var applicationContext = _context.Activities.Include(a => a.TimeInterval).Include(a => a.Type);
             return View(await applicationContext.ToListAsync());
         }
 
@@ -35,6 +36,7 @@ namespace JournalMVC.Controllers
             }
 
             var activity = await _context.Activities
+                .Include(a => a.TimeInterval)
                 .Include(a => a.Type)
                 .FirstOrDefaultAsync(m => m.Id == id);
             if (activity == null)
@@ -48,6 +50,7 @@ namespace JournalMVC.Controllers
         // GET: Activities/Create
         public IActionResult Create()
         {
+            ViewData["TimeIntervals"] = new SelectList(_context.TimeIntervals, "Id", "Interval");
             ViewData["TypeActivities"] = new SelectList(_context.TypeActivities, "Id", "Name");
             return View();
         }
@@ -57,13 +60,17 @@ namespace JournalMVC.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("Id,TypeId,Description")] Activity activity)
+        public async Task<IActionResult> Create([Bind("Id,TypeId,TimeIntervalId,Description")] Activity activity)
         {
-            activity.Type = await _context.TypeActivities.FindAsync(activity.TypeId);
-
-            _context.Add(activity);
-            await _context.SaveChangesAsync();
-            return RedirectToAction(nameof(Index));
+            if (ModelState.IsValid)
+            {
+                _context.Add(activity);
+                await _context.SaveChangesAsync();
+                return RedirectToAction(nameof(Index));
+            }
+            ViewData["TimeIntervals"] = new SelectList(_context.TimeIntervals, "Id", "Interval", activity.TimeIntervalId);
+            ViewData["TypeActivities"] = new SelectList(_context.TypeActivities, "Id", "Name", activity.TypeId);
+            return View(activity);
         }
 
         // GET: Activities/Edit/5
@@ -79,7 +86,8 @@ namespace JournalMVC.Controllers
             {
                 return NotFound();
             }
-            ViewData["TypeId"] = new SelectList(_context.TypeActivities, "Id", "Id", activity.TypeId);
+            ViewData["TimeIntervals"] = new SelectList(_context.TimeIntervals, "Id", "Interval", activity.TimeIntervalId);
+            ViewData["TypeActivities"] = new SelectList(_context.TypeActivities, "Id", "Name", activity.TypeId);
             return View(activity);
         }
 
@@ -88,30 +96,36 @@ namespace JournalMVC.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, [Bind("Id,TypeId,Description")] Activity activity)
+        public async Task<IActionResult> Edit(int id, [Bind("Id,TypeId,TimeIntervalId,Description")] Activity activity)
         {
             if (id != activity.Id)
             {
                 return NotFound();
             }
 
-            try
+            if (ModelState.IsValid)
             {
-                _context.Update(activity);
-                await _context.SaveChangesAsync();
-            }
-            catch (DbUpdateConcurrencyException)
-            {
-                if (!ActivityExists(activity.Id))
+                try
                 {
-                    return NotFound();
+                    _context.Update(activity);
+                    await _context.SaveChangesAsync();
                 }
-                else
+                catch (DbUpdateConcurrencyException)
                 {
-                    throw;
+                    if (!ActivityExists(activity.Id))
+                    {
+                        return NotFound();
+                    }
+                    else
+                    {
+                        throw;
+                    }
                 }
+                return RedirectToAction(nameof(Index));
             }
-            return RedirectToAction(nameof(Index));
+            ViewData["TimeIntervals"] = new SelectList(_context.TimeIntervals, "Id", "Interval", activity.TimeIntervalId);
+            ViewData["TypeActivities"] = new SelectList(_context.TypeActivities, "Id", "Name", activity.TypeId);
+            return View(activity);
         }
 
         // GET: Activities/Delete/5
@@ -123,6 +137,7 @@ namespace JournalMVC.Controllers
             }
 
             var activity = await _context.Activities
+                .Include(a => a.TimeInterval)
                 .Include(a => a.Type)
                 .FirstOrDefaultAsync(m => m.Id == id);
             if (activity == null)
