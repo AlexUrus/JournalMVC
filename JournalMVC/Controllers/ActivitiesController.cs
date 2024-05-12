@@ -7,24 +7,29 @@ using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using JournalMVC.Database;
 using JournalMVC.Models;
+using JournalMVC.Services.Interfaces;
+using JournalMVC.DTO;
+using JournalMVC.Services;
 
 namespace JournalMVC.Controllers
 {
     public class ActivitiesController : Controller
     {
-        private readonly ApplicationContext _context;
+        private readonly IActivitiesService _activityService;
+        private readonly ITypeActivitiesService _typeActivitiesService;
+        private readonly ITimeIntervalsService _timeIntervalsService;
 
-
-        public ActivitiesController(ApplicationContext context)
+        public ActivitiesController(IActivitiesService activityService,
+            ITimeIntervalsService timeIntervalsService, ITypeActivitiesService typeActivitiesService)
         {
-            _context = context;
+            (_activityService, _typeActivitiesService, _timeIntervalsService) = (activityService, typeActivitiesService, timeIntervalsService);
         }
 
         // GET: Activities
         public async Task<IActionResult> Index()
         {
-            var applicationContext = _context.Activities.Include(a => a.TimeInterval).Include(a => a.Type);
-            return View(await applicationContext.ToListAsync());
+            var activities = await _activityService.GetAsync();
+            return View(activities);
         }
 
         // GET: Activities/Details/5
@@ -35,10 +40,8 @@ namespace JournalMVC.Controllers
                 return NotFound();
             }
 
-            var activity = await _context.Activities
-                .Include(a => a.TimeInterval)
-                .Include(a => a.Type)
-                .FirstOrDefaultAsync(m => m.Id == id);
+            var activity = await _activityService.GetAsync((int)id);
+
             if (activity == null)
             {
                 return NotFound();
@@ -48,29 +51,20 @@ namespace JournalMVC.Controllers
         }
 
         // GET: Activities/Create
-        public IActionResult Create()
+        public async Task<IActionResult> Create()
         {
-            ViewData["TimeIntervals"] = new SelectList(_context.TimeIntervals, "Id", "Interval");
-            ViewData["TypeActivities"] = new SelectList(_context.TypeActivities, "Id", "Name");
+            ViewData["TimeIntervals"] = new SelectList(await _timeIntervalsService.GetAsync(), "Id", "Interval");
+            ViewData["TypeActivities"] = new SelectList(await _typeActivitiesService.GetAsync(), "Id", "Name");
             return View();
         }
 
         // POST: Activities/Create
-        // To protect from overposting attacks, enable the specific properties you want to bind to.
-        // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("Id,TypeId,TimeIntervalId,Description")] Activity activity)
+        public async Task<IActionResult> Create([Bind("Id,TypeId,TimeIntervalId,Description")] ActivityDTO activityDto)
         {
-            if (ModelState.IsValid)
-            {
-                _context.Add(activity);
-                await _context.SaveChangesAsync();
-                return RedirectToAction(nameof(Index));
-            }
-            ViewData["TimeIntervals"] = new SelectList(_context.TimeIntervals, "Id", "Interval", activity.TimeIntervalId);
-            ViewData["TypeActivities"] = new SelectList(_context.TypeActivities, "Id", "Name", activity.TypeId);
-            return View(activity);
+            await _activityService.AddAsync(activityDto);
+            return RedirectToAction(nameof(Index));
         }
 
         // GET: Activities/Edit/5
@@ -81,24 +75,22 @@ namespace JournalMVC.Controllers
                 return NotFound();
             }
 
-            var activity = await _context.Activities.FindAsync(id);
-            if (activity == null)
+            var activityDto = await _activityService.GetAsync((int)id);
+            if (activityDto == null)
             {
                 return NotFound();
             }
-            ViewData["TimeIntervals"] = new SelectList(_context.TimeIntervals, "Id", "Interval", activity.TimeIntervalId);
-            ViewData["TypeActivities"] = new SelectList(_context.TypeActivities, "Id", "Name", activity.TypeId);
-            return View(activity);
+            ViewData["TimeIntervals"] = new SelectList(await _timeIntervalsService.GetAsync(), "Id", "Interval", activityDto.TimeIntervalId);
+            ViewData["TypeActivities"] = new SelectList(await _typeActivitiesService.GetAsync(), "Id", "Name", activityDto.TypeId);
+            return View(activityDto);
         }
 
         // POST: Activities/Edit/5
-        // To protect from overposting attacks, enable the specific properties you want to bind to.
-        // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, [Bind("Id,TypeId,TimeIntervalId,Description")] Activity activity)
+        public async Task<IActionResult> Edit(int id, [Bind("Id,TypeId,TimeIntervalId,Description")] ActivityDTO activityDto)
         {
-            if (id != activity.Id)
+            if (id != activityDto.Id)
             {
                 return NotFound();
             }
@@ -107,12 +99,11 @@ namespace JournalMVC.Controllers
             {
                 try
                 {
-                    _context.Update(activity);
-                    await _context.SaveChangesAsync();
+                    await _activityService.UpdateAsync(activityDto);
                 }
                 catch (DbUpdateConcurrencyException)
                 {
-                    if (!ActivityExists(activity.Id))
+                    if (!await ActivityExists(activityDto.Id))
                     {
                         return NotFound();
                     }
@@ -123,9 +114,9 @@ namespace JournalMVC.Controllers
                 }
                 return RedirectToAction(nameof(Index));
             }
-            ViewData["TimeIntervals"] = new SelectList(_context.TimeIntervals, "Id", "Interval", activity.TimeIntervalId);
-            ViewData["TypeActivities"] = new SelectList(_context.TypeActivities, "Id", "Name", activity.TypeId);
-            return View(activity);
+            ViewData["TimeIntervals"] = new SelectList(await _timeIntervalsService.GetAsync(), "Id", "Interval", activityDto.TimeIntervalId);
+            ViewData["TypeActivities"] = new SelectList(await _typeActivitiesService.GetAsync(), "Id", "Name", activityDto.TypeId);
+            return View(activityDto);
         }
 
         // GET: Activities/Delete/5
@@ -136,10 +127,7 @@ namespace JournalMVC.Controllers
                 return NotFound();
             }
 
-            var activity = await _context.Activities
-                .Include(a => a.TimeInterval)
-                .Include(a => a.Type)
-                .FirstOrDefaultAsync(m => m.Id == id);
+            var activity = await _activityService.GetAsync((int)id);
             if (activity == null)
             {
                 return NotFound();
@@ -153,19 +141,13 @@ namespace JournalMVC.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteConfirmed(int id)
         {
-            var activity = await _context.Activities.FindAsync(id);
-            if (activity != null)
-            {
-                _context.Activities.Remove(activity);
-            }
-
-            await _context.SaveChangesAsync();
+            await _activityService.DeleteAsync(id);
             return RedirectToAction(nameof(Index));
         }
 
-        private bool ActivityExists(int id)
+        private async Task<bool> ActivityExists(int id)
         {
-            return _context.Activities.Any(e => e.Id == id);
+            return await _activityService.GetAsync(id) != null;
         }
     }
 }

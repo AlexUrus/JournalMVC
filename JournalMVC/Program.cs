@@ -1,4 +1,6 @@
 using JournalMVC.Database;
+using JournalMVC.Repositories;
+using JournalMVC.Repositories.Interfaces;
 using Microsoft.EntityFrameworkCore;
 
 namespace JournalMVC
@@ -8,10 +10,14 @@ namespace JournalMVC
         public static void Main(string[] args)
         {
             var builder = WebApplication.CreateBuilder(args);
-
+            builder.Logging.ClearProviders();
+            builder.Logging.AddConsole();
             IServiceCollection services = builder.Services;
             AddDatabase(builder);
             services.AddControllersWithViews();
+            services.AddAutoMapper(typeof(AppMappingProfile));
+            
+            AddRepositories(services);
 
             var app = builder.Build();
 
@@ -39,6 +45,13 @@ namespace JournalMVC
         {
             string connection = builder.Configuration.GetConnectionString("DefaultConnection");
             builder.Services.AddDbContext<ApplicationContext>(options => options.UseSqlServer(connection));
+        }
+
+        public static void AddRepositories(IServiceCollection services)
+        {
+            services.AddScoped<IActivitiesRepository, ActivitiesRepository>();
+            services.AddScoped<ITimeIntervalsRepository, TimeIntervalsRepository>();
+            services.AddScoped<ITypeActivitiesRepository, TypeActivitiesRepository>();
         }
     }
 }

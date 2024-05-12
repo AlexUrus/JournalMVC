@@ -1,4 +1,4 @@
-﻿@model IEnumerable<JournalMVC.Models.Activity>
+﻿@model IEnumerable<JournalMVC.DTO.ActivityDTO>
 
 @{
     ViewData["Title"] = "Index";
@@ -31,10 +31,10 @@
                 @Html.DisplayFor(modelItem => item.Description)
             </td>
             <td>
-                @Html.DisplayFor(modelItem => item.Type.Id)
+                @Html.DisplayFor(modelItem => item.Type.Name)
             </td>
             <td>
-                @Html.DisplayFor(modelItem => item.TimeInterval.Id)
+                @Html.DisplayFor(modelItem => item.TimeInterval.Interval)
             </td>
             <td>
                 <a asp-action="Edit" asp-route-id="@item.Id">Edit</a> |

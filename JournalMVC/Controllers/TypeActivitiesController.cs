@@ -1,28 +1,26 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.Rendering;
-using Microsoft.EntityFrameworkCore;
-using JournalMVC.Database;
+﻿using JournalMVC.DTO;
 using JournalMVC.Models;
+using JournalMVC.Services.Interfaces;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
+using System.Threading.Tasks;
 
 namespace JournalMVC.Controllers
 {
     public class TypeActivitiesController : Controller
     {
-        private readonly ApplicationContext _context;
+        private readonly ITypeActivitiesService _typeActivitiesService;
 
-        public TypeActivitiesController(ApplicationContext context)
+        public TypeActivitiesController(ITypeActivitiesService typeActivitiesService)
         {
-            _context = context;
+            _typeActivitiesService = typeActivitiesService;
         }
 
         // GET: TypeActivities
         public async Task<IActionResult> Index()
         {
-            return View(await _context.TypeActivities.ToListAsync());
+            var typeActivities = await _typeActivitiesService.GetAsync();
+            return View(typeActivities);
         }
 
         // GET: TypeActivities/Details/5
@@ -33,8 +31,7 @@ namespace JournalMVC.Controllers
                 return NotFound();
             }
 
-            var typeActivity = await _context.TypeActivities
-                .FirstOrDefaultAsync(m => m.Id == id);
+            var typeActivity = await _typeActivitiesService.GetAsync((int)id);
             if (typeActivity == null)
             {
                 return NotFound();
@@ -50,16 +47,13 @@ namespace JournalMVC.Controllers
         }
 
         // POST: TypeActivities/Create
-        // To protect from overposting attacks, enable the specific properties you want to bind to.
-        // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create([Bind("Id,Name")] TypeActivity typeActivity)
         {
             if (ModelState.IsValid)
             {
-                _context.Add(typeActivity);
-                await _context.SaveChangesAsync();
+                await _typeActivitiesService.AddAsync(new TypeActivityDTO { Name = typeActivity.Name });
                 return RedirectToAction(nameof(Index));
             }
             return View(typeActivity);
@@ -73,7 +67,7 @@ namespace JournalMVC.Controllers
                 return NotFound();
             }
 
-            var typeActivity = await _context.TypeActivities.FindAsync(id);
+            var typeActivity = await _typeActivitiesService.GetAsync((int)id);
             if (typeActivity == null)
             {
                 return NotFound();
@@ -82,8 +76,6 @@ namespace JournalMVC.Controllers
         }
 
         // POST: TypeActivities/Edit/5
-        // To protect from overposting attacks, enable the specific properties you want to bind to.
-        // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Edit(int id, [Bind("Id,Name")] TypeActivity typeActivity)
@@ -97,12 +89,11 @@ namespace JournalMVC.Controllers
             {
                 try
                 {
-                    _context.Update(typeActivity);
-                    await _context.SaveChangesAsync();
+                    await _typeActivitiesService.UpdateAsync(new TypeActivityDTO { Id = typeActivity.Id, Name = typeActivity.Name });
                 }
                 catch (DbUpdateConcurrencyException)
                 {
-                    if (!TypeActivityExists(typeActivity.Id))
+                    if (!await TypeActivityExists(typeActivity.Id))
                     {
                         return NotFound();
                     }
@@ -124,8 +115,7 @@ namespace JournalMVC.Controllers
                 return NotFound();
             }
 
-            var typeActivity = await _context.TypeActivities
-                .FirstOrDefaultAsync(m => m.Id == id);
+            var typeActivity = await _typeActivitiesService.GetAsync((int)id);
             if (typeActivity == null)
             {
                 return NotFound();
@@ -139,19 +129,13 @@ namespace JournalMVC.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteConfirmed(int id)
         {
-            var typeActivity = await _context.TypeActivities.FindAsync(id);
-            if (typeActivity != null)
-            {
-                _context.TypeActivities.Remove(typeActivity);
-            }
-
-            await _context.SaveChangesAsync();
+            await _typeActivitiesService.DeleteAsync(new TypeActivityDTO { Id = id });
             return RedirectToAction(nameof(Index));
         }
 
-        private bool TypeActivityExists(int id)
+        private async Task<bool> TypeActivityExists(int id)
         {
-            return _context.TypeActivities.Any(e => e.Id == id);
+            return await _typeActivitiesService.GetAsync(id) != null;
         }
     }
 }

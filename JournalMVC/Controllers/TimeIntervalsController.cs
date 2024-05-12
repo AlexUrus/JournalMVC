@@ -1,30 +1,27 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
+﻿using JournalMVC.DTO;
+using JournalMVC.Services.Interfaces;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
-using JournalMVC.Database;
-using JournalMVC.Models;
-using JournalMVC.DTO;
-using Microsoft.AspNetCore.Razor.Language.CodeGeneration;
+using System.Threading.Tasks;
 
 namespace JournalMVC.Controllers
 {
     public class TimeIntervalsController : Controller
     {
-        private readonly ApplicationContext _context;
+        private readonly ITimeIntervalsService _timeIntervalsService;
 
-        public TimeIntervalsController(ApplicationContext context)
+        public TimeIntervalsController(ITimeIntervalsService timeIntervalsService)
         {
-            _context = context;
+            _timeIntervalsService = timeIntervalsService;
         }
 
         // GET: TimeIntervals
         public async Task<IActionResult> Index()
         {
-            return View(await _context.TimeIntervals.ToListAsync());
+            var timeIntervals = await _timeIntervalsService.GetAsync();
+            ViewData["TimeIntervals"] = new SelectList(timeIntervals, "Id", "Interval");
+            return View(timeIntervals);
         }
 
         // GET: TimeIntervals/Details/5
@@ -35,8 +32,7 @@ namespace JournalMVC.Controllers
                 return NotFound();
             }
 
-            var timeInterval = await _context.TimeIntervals
-                .FirstOrDefaultAsync(m => m.Id == id);
+            var timeInterval = await _timeIntervalsService.GetAsync((int)id);
             if (timeInterval == null)
             {
                 return NotFound();
@@ -52,21 +48,11 @@ namespace JournalMVC.Controllers
         }
 
         // POST: TimeIntervals/Create
-        // To protect from overposting attacks, enable the specific properties you want to bind to.
-        // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create([Bind("Id,StartActivity,EndActivity")] TimeIntervalDTO timeIntervalDTO)
         {
-            TimeInterval timeInterval = new TimeInterval()
-            {
-                Id = timeIntervalDTO.Id,
-                StartActivity = timeIntervalDTO.StartActivity.TimeOfDay,
-                EndActivity = timeIntervalDTO.EndActivity.TimeOfDay
-            };
-
-            _context.Add(timeInterval);
-            await _context.SaveChangesAsync();
+            await _timeIntervalsService.AddAsync(timeIntervalDTO);
             return RedirectToAction(nameof(Index));
         }
 
@@ -78,22 +64,20 @@ namespace JournalMVC.Controllers
                 return NotFound();
             }
 
-            var timeInterval = await _context.TimeIntervals.FindAsync(id);
-            if (timeInterval == null)
+            var timeIntervalDTO = await _timeIntervalsService.GetAsync((int)id);
+            if (timeIntervalDTO == null)
             {
                 return NotFound();
             }
-            return View(timeInterval);
+            return View(timeIntervalDTO);
         }
 
         // POST: TimeIntervals/Edit/5
-        // To protect from overposting attacks, enable the specific properties you want to bind to.
-        // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, [Bind("Id,StartActivity,EndActivity")] TimeInterval timeInterval)
+        public async Task<IActionResult> Edit(int id, [Bind("Id,StartActivity,EndActivity")] TimeIntervalDTO timeIntervalDto)
         {
-            if (id != timeInterval.Id)
+            if (id != timeIntervalDto.Id)
             {
                 return NotFound();
             }
@@ -102,12 +86,11 @@ namespace JournalMVC.Controllers
             {
                 try
                 {
-                    _context.Update(timeInterval);
-                    await _context.SaveChangesAsync();
+                    await _timeIntervalsService.UpdateAsync(timeIntervalDto);
                 }
                 catch (DbUpdateConcurrencyException)
                 {
-                    if (!TimeIntervalExists(timeInterval.Id))
+                    if (!await TimeIntervalExists(timeIntervalDto.Id))
                     {
                         return NotFound();
                     }
@@ -118,7 +101,7 @@ namespace JournalMVC.Controllers
                 }
                 return RedirectToAction(nameof(Index));
             }
-            return View(timeInterval);
+            return View(timeIntervalDto);
         }
 
         // GET: TimeIntervals/Delete/5
@@ -129,8 +112,7 @@ namespace JournalMVC.Controllers
                 return NotFound();
             }
 
-            var timeInterval = await _context.TimeIntervals
-                .FirstOrDefaultAsync(m => m.Id == id);
+            var timeInterval = await _timeIntervalsService.GetAsync((int)id);
             if (timeInterval == null)
             {
                 return NotFound();
@@ -144,19 +126,13 @@ namespace JournalMVC.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteConfirmed(int id)
         {
-            var timeInterval = await _context.TimeIntervals.FindAsync(id);
-            if (timeInterval != null)
-            {
-                _context.TimeIntervals.Remove(timeInterval);
-            }
-
-            await _context.SaveChangesAsync();
+            await _timeIntervalsService.DeleteAsync(new TimeIntervalDTO { Id = id });
             return RedirectToAction(nameof(Index));
         }
 
-        private bool TimeIntervalExists(int id)
+        private async Task<bool> TimeIntervalExists(int id)
         {
-            return _context.TimeIntervals.Any(e => e.Id == id);
+            return await _timeIntervalsService.GetAsync(id) != null;
         }
     }
 }
