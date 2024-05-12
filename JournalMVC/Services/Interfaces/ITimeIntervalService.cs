@@ -7,14 +7,14 @@ namespace JournalMVC.Services.Interfaces
         Task AddAsync(TimeIntervalDTO dTO);
         Task<ICollection<TimeIntervalDTO>> GetAsync();
         Task<TimeIntervalDTO> GetAsync(int id);
-        Task DeleteAsync(TimeIntervalDTO dTO);
+        Task DeleteAsync(int id);
         Task UpdateAsync(TimeIntervalDTO dTO);
 
         // Sync methods
         void Add(TimeIntervalDTO dTO);
         ICollection<TimeIntervalDTO> Get();
         TimeIntervalDTO Get(int id);
-        void Delete(TimeIntervalDTO dTO);
+        void Delete(int id);
         void Update(TimeIntervalDTO dTO);
     }
 }

@@ -35,9 +35,9 @@ namespace JournalMVC.Services
             return _mapper.Map<TypeActivityDTO>(obj);
         }
 
-        public async Task DeleteAsync(TypeActivityDTO dTO)
+        public async Task DeleteAsync(int id)
         {
-            var obj = _mapper.Map<TypeActivity>(dTO);
+            var obj = await _repository.GetAsync(id);
             await _repository.DeleteAsync(obj);
         }
 
@@ -65,9 +65,9 @@ namespace JournalMVC.Services
             return _mapper.Map<TypeActivityDTO>(obj);
         }
 
-        public void Delete(TypeActivityDTO dTO)
+        public void Delete(int id)
         {
-            var obj = _mapper.Map<TypeActivity>(dTO);
+            var obj = _repository.Get(id);
             _repository.Delete(obj);
         }
 

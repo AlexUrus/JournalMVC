@@ -126,7 +126,7 @@ namespace JournalMVC.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteConfirmed(int id)
         {
-            await _timeIntervalsService.DeleteAsync(new TimeIntervalDTO { Id = id });
+            await _timeIntervalsService.DeleteAsync(id);
             return RedirectToAction(nameof(Index));
         }
 

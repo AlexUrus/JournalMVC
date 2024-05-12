@@ -1,6 +1,8 @@
 using JournalMVC.Database;
 using JournalMVC.Repositories;
 using JournalMVC.Repositories.Interfaces;
+using JournalMVC.Services;
+using JournalMVC.Services.Interfaces;
 using Microsoft.EntityFrameworkCore;
 
 namespace JournalMVC
@@ -18,6 +20,7 @@ namespace JournalMVC
             services.AddAutoMapper(typeof(AppMappingProfile));
             
             AddRepositories(services);
+            AddServices(services);
 
             var app = builder.Build();
 
@@ -52,6 +55,13 @@ namespace JournalMVC
             services.AddScoped<IActivitiesRepository, ActivitiesRepository>();
             services.AddScoped<ITimeIntervalsRepository, TimeIntervalsRepository>();
             services.AddScoped<ITypeActivitiesRepository, TypeActivitiesRepository>();
+        }
+
+        public static void AddServices(IServiceCollection services)
+        {
+            services.AddScoped<IActivitiesService, ActivitiesService>();
+            services.AddScoped<ITimeIntervalsService, TimeIntervalsService>();
+            services.AddScoped<ITypeActivitiesService, TypeActivitiesService>();
         }
     }
 }

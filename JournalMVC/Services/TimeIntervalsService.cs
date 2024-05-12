@@ -35,9 +35,9 @@ namespace JournalMVC.Services
             return _mapper.Map<TimeIntervalDTO>(obj);
         }
 
-        public async Task DeleteAsync(TimeIntervalDTO dTO)
+        public async Task DeleteAsync(int id)
         {
-            var obj = _mapper.Map<TimeInterval>(dTO);
+            var obj = await _timeIntervalsRepository.GetAsync(id);
             await _timeIntervalsRepository.DeleteAsync(obj);
         }
 
@@ -65,9 +65,9 @@ namespace JournalMVC.Services
             return _mapper.Map<TimeIntervalDTO>(obj);
         }
 
-        public void Delete(TimeIntervalDTO dTO)
+        public void Delete(int id)
         {
-            var obj = _mapper.Map<TimeInterval>(dTO);
+            var obj = _timeIntervalsRepository.Get(id);
             _timeIntervalsRepository.Delete(obj);
         }
 
