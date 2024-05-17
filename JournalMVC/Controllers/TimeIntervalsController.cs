@@ -20,6 +20,7 @@ namespace JournalMVC.Controllers
         public async Task<IActionResult> Index()
         {
             var timeIntervals = await _timeIntervalsService.GetAsync();
+            timeIntervals = timeIntervals.OrderBy(t => t.StartActivity).ToList();
             ViewData["TimeIntervals"] = new SelectList(timeIntervals, "Id", "Interval");
             return View(timeIntervals);
         }

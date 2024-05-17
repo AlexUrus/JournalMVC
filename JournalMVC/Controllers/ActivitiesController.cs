@@ -29,6 +29,7 @@ namespace JournalMVC.Controllers
         public async Task<IActionResult> Index()
         {
             var activities = await _activityService.GetAsync();
+            activities = activities.OrderBy(x => x.TimeInterval.StartActivity).ToList();
             return View(activities);
         }
 

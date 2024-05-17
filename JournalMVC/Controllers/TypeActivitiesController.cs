@@ -20,6 +20,7 @@ namespace JournalMVC.Controllers
         public async Task<IActionResult> Index()
         {
             var typeActivities = await _typeActivitiesService.GetAsync();
+            typeActivities = typeActivities.OrderBy(t => t.Name).ToList();
             return View(typeActivities);
         }
 
