@@ -1,5 +1,6 @@
 using JournalMVC.Database;
-using JournalMVC.Repositories;
+using JournalMVC.Repositories.ADO;
+using JournalMVC.Repositories.EF;
 using JournalMVC.Repositories.Interfaces;
 using JournalMVC.Services;
 using JournalMVC.Services.Interfaces;
@@ -19,7 +20,8 @@ namespace JournalMVC
             services.AddControllersWithViews();
             services.AddAutoMapper(typeof(AppMappingProfile));
             
-            AddRepositories(services);
+            AddRepositoriesEF(services);
+            //AddRepositoriesADO(services);
             AddServices(services);
 
             var app = builder.Build();
@@ -38,8 +40,8 @@ namespace JournalMVC
             app.UseAuthorization();
 
             app.MapControllerRoute(
-                name: "default",
-                pattern: "{controller=Home}/{action=Index}/{id?}");
+                name: "Activities",
+                pattern: "{controller=Activities}/{action=Index}/{id?}");
 
             app.Run();
         }
@@ -50,11 +52,17 @@ namespace JournalMVC
             builder.Services.AddDbContext<ApplicationContext>(options => options.UseSqlServer(connection));
         }
 
-        public static void AddRepositories(IServiceCollection services)
+        public static void AddRepositoriesEF(IServiceCollection services)
         {
-            services.AddScoped<IActivitiesRepository, ActivitiesRepository>();
-            services.AddScoped<ITimeIntervalsRepository, TimeIntervalsRepository>();
-            services.AddScoped<ITypeActivitiesRepository, TypeActivitiesRepository>();
+            services.AddScoped<IActivitiesRepository, ActivitiesRepositoryEF>();
+            services.AddScoped<ITimeIntervalsRepository, TimeIntervalsRepositoryEF>();
+            services.AddScoped<ITypeActivitiesRepository, TypeActivitiesRepositoryEF>();
+        }
+        public static void AddRepositoriesADO(IServiceCollection services)
+        {
+            services.AddScoped<IActivitiesRepository, ActivitiesRepositoryADO>();
+            services.AddScoped<ITimeIntervalsRepository, TimeIntervalsRepositoryADO>();
+            services.AddScoped<ITypeActivitiesRepository, TypeActivitiesRepositoryADO>();
         }
 
         public static void AddServices(IServiceCollection services)
@@ -62,6 +70,7 @@ namespace JournalMVC
             services.AddScoped<IActivitiesService, ActivitiesService>();
             services.AddScoped<ITimeIntervalsService, TimeIntervalsService>();
             services.AddScoped<ITypeActivitiesService, TypeActivitiesService>();
+            services.AddScoped<IStatisticService, StatisticService>();
         }
     }
 }

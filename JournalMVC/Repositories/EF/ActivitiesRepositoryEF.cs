@@ -6,23 +6,24 @@ using JournalMVC.Models;
 using JournalMVC.Repositories.Interfaces;
 using Microsoft.EntityFrameworkCore;
 
-namespace JournalMVC.Repositories
+namespace JournalMVC.Repositories.EF
 {
-    public class TypeActivitiesRepository : ITypeActivitiesRepository
+    public class ActivitiesRepositoryEF : IActivitiesRepository
     {
         private readonly ApplicationContext _context;
-        private readonly ILogger<TypeActivitiesRepository> _logger;
+        private readonly ILogger<ActivitiesRepositoryEF> _logger;
 
-        public TypeActivitiesRepository(ApplicationContext context, ILogger<TypeActivitiesRepository> logger)
+        public ActivitiesRepositoryEF(ApplicationContext context, ILogger<ActivitiesRepositoryEF> logger)
         {
             _context = context;
             _logger = logger;
         }
-        public void Add(TypeActivity model)
+
+        public void Add(Activity model)
         {
             try
             {
-                _context.TypeActivities.Add(model);
+                _context.Activities.Add(model);
                 _context.SaveChanges();
             }
             catch (DbUpdateException ex)
@@ -32,11 +33,11 @@ namespace JournalMVC.Repositories
             }
         }
 
-        public async Task AddAsync(TypeActivity model)
+        public async Task AddAsync(Activity model)
         {
             try
             {
-                await _context.TypeActivities.AddAsync(model);
+                await _context.Activities.AddAsync(model);
                 await _context.SaveChangesAsync();
             }
             catch (DbUpdateException ex)
@@ -46,11 +47,11 @@ namespace JournalMVC.Repositories
             }
         }
 
-        public void Delete(TypeActivity model)
+        public void Delete(Activity model)
         {
             try
             {
-                _context.TypeActivities.Remove(model);
+                _context.Activities.Remove(model);
                 _context.SaveChanges();
             }
             catch (DbUpdateException ex)
@@ -60,11 +61,11 @@ namespace JournalMVC.Repositories
             }
         }
 
-        public async Task DeleteAsync(TypeActivity model)
+        public async Task DeleteAsync(Activity model)
         {
             try
             {
-                _context.TypeActivities.Remove(model);
+                _context.Activities.Remove(model);
                 await _context.SaveChangesAsync();
             }
             catch (DbUpdateException ex)
@@ -74,11 +75,45 @@ namespace JournalMVC.Repositories
             }
         }
 
-        public TypeActivity? Get(int id)
+        public ICollection<Activity> Get()
         {
             try
             {
-                var obj = _context.TypeActivities.Find(id);
+                var listObjects = _context.Activities.Include(d => d.TimeInterval)
+                                                       .Include(d => d.Type)
+                                                       .ToList();
+
+                return listObjects;
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex.Message);
+                throw new ActivitiesRepositoryException("Ошибка при получении всех элементов.", ex);
+            }
+        }
+
+        public async Task<ICollection<Activity>> GetAsync()
+        {
+            try
+            {
+                var listObjects = await _context.Activities.Include(d => d.TimeInterval)
+                                                       .Include(d => d.Type)
+                                                       .ToListAsync();
+
+                return listObjects;
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex.Message);
+                throw new ActivitiesRepositoryException("Ошибка при получении всех элементов.", ex);
+            }
+        }
+
+        public Activity? Get(int id)
+        {
+            try
+            {
+                var obj = _context.Activities.Find(id);
 
                 if (obj != null)
                     return obj;
@@ -91,11 +126,12 @@ namespace JournalMVC.Repositories
                 throw new ActivitiesRepositoryException("Ошибка при получении элемента.", ex);
             }
         }
-        public async Task<TypeActivity?> GetAsync(int id)
+
+        public async Task<Activity?> GetAsync(int id)
         {
             try
             {
-                var obj = await _context.TypeActivities.FindAsync(id);
+                var obj = await _context.Activities.FindAsync(id);
 
                 if (obj != null)
                     return obj;
@@ -109,40 +145,11 @@ namespace JournalMVC.Repositories
             }
         }
 
-        public ICollection<TypeActivity> Get()
+        public void Update(Activity model)
         {
             try
             {
-                var listModels = _context.TypeActivities.ToList();
-
-                return listModels;
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError(ex.Message);
-                throw new ActivitiesRepositoryException("Ошибка при получении всех элементов.", ex);
-            }
-        }
-        public async Task<ICollection<TypeActivity>> GetAsync()
-        {
-            try
-            {
-                var listModels = await _context.TypeActivities.ToListAsync();
-
-                return listModels;
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError(ex.Message);
-                throw new ActivitiesRepositoryException("Ошибка при получении всех элементов.", ex);
-            }
-        }
-
-        public void Update(TypeActivity model)
-        {
-            try
-            {
-                _context.TypeActivities.Update(model);
+                _context.Activities.Update(model);
                 _context.SaveChanges();
             }
             catch (DbUpdateException ex)
@@ -152,11 +159,11 @@ namespace JournalMVC.Repositories
             }
         }
 
-        public async Task UpdateAsync(TypeActivity model)
+        public async Task UpdateAsync(Activity model)
         {
             try
             {
-                _context.TypeActivities.Update(model);
+                _context.Activities.Update(model);
                 await _context.SaveChangesAsync();
             }
             catch (DbUpdateException ex)

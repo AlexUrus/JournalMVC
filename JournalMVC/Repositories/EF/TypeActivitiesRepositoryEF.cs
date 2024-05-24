@@ -6,24 +6,23 @@ using JournalMVC.Models;
 using JournalMVC.Repositories.Interfaces;
 using Microsoft.EntityFrameworkCore;
 
-namespace JournalMVC.Repositories
+namespace JournalMVC.Repositories.EF
 {
-    public class TimeIntervalsRepository : ITimeIntervalsRepository
+    public class TypeActivitiesRepositoryEF : ITypeActivitiesRepository
     {
         private readonly ApplicationContext _context;
-        private readonly ILogger<TimeIntervalsRepository> _logger;
+        private readonly ILogger<TypeActivitiesRepositoryEF> _logger;
 
-        public TimeIntervalsRepository(ApplicationContext context, ILogger<TimeIntervalsRepository> logger)
+        public TypeActivitiesRepositoryEF(ApplicationContext context, ILogger<TypeActivitiesRepositoryEF> logger)
         {
             _context = context;
             _logger = logger;
         }
-
-        public void Add(TimeInterval model)
+        public void Add(TypeActivity model)
         {
             try
             {
-                _context.TimeIntervals.Add(model);
+                _context.TypeActivities.Add(model);
                 _context.SaveChanges();
             }
             catch (DbUpdateException ex)
@@ -33,11 +32,11 @@ namespace JournalMVC.Repositories
             }
         }
 
-        public async Task AddAsync(TimeInterval model)
+        public async Task AddAsync(TypeActivity model)
         {
             try
             {
-                await _context.TimeIntervals.AddAsync(model);
+                await _context.TypeActivities.AddAsync(model);
                 await _context.SaveChangesAsync();
             }
             catch (DbUpdateException ex)
@@ -47,11 +46,11 @@ namespace JournalMVC.Repositories
             }
         }
 
-        public void Delete(TimeInterval model)
+        public void Delete(TypeActivity model)
         {
             try
             {
-                _context.TimeIntervals.Remove(model);
+                _context.TypeActivities.Remove(model);
                 _context.SaveChanges();
             }
             catch (DbUpdateException ex)
@@ -61,11 +60,11 @@ namespace JournalMVC.Repositories
             }
         }
 
-        public async Task DeleteAsync(TimeInterval model)
+        public async Task DeleteAsync(TypeActivity model)
         {
             try
             {
-                _context.TimeIntervals.Remove(model);
+                _context.TypeActivities.Remove(model);
                 await _context.SaveChangesAsync();
             }
             catch (DbUpdateException ex)
@@ -75,41 +74,28 @@ namespace JournalMVC.Repositories
             }
         }
 
-        public ICollection<TimeInterval> Get()
+        public TypeActivity? Get(int id)
         {
             try
             {
-                var listModels = _context.TimeIntervals.ToList();
+                var obj = _context.TypeActivities.Find(id);
 
-                return listModels;
+                if (obj != null)
+                    return obj;
+                else
+                    return null;
             }
-            catch (Exception ex)
+            catch (DbUpdateException ex)
             {
                 _logger.LogError(ex.Message);
-                throw new ActivitiesRepositoryException("Ошибка при получении всех элементов.", ex);
+                throw new ActivitiesRepositoryException("Ошибка при получении элемента.", ex);
             }
         }
-
-        public async Task<ICollection<TimeInterval>> GetAsync()
+        public async Task<TypeActivity?> GetAsync(int id)
         {
             try
             {
-                var listModels = await _context.TimeIntervals.ToListAsync();
-
-                return listModels;
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError(ex.Message);
-                throw new ActivitiesRepositoryException("Ошибка при получении всех элементов.", ex);
-            }
-        }
-
-        public TimeInterval? Get(int id)
-        {
-            try
-            {
-                var obj = _context.TimeIntervals.Find(id);
+                var obj = await _context.TypeActivities.FindAsync(id);
 
                 if (obj != null)
                     return obj;
@@ -123,29 +109,40 @@ namespace JournalMVC.Repositories
             }
         }
 
-        public async Task<TimeInterval?> GetAsync(int id)
+        public ICollection<TypeActivity> Get()
         {
             try
             {
-                var obj = await _context.TimeIntervals.FindAsync(id);
+                var listModels = _context.TypeActivities.ToList();
 
-                if (obj != null)
-                    return obj;
-                else
-                    return null;
+                return listModels;
             }
-            catch (DbUpdateException ex)
+            catch (Exception ex)
             {
                 _logger.LogError(ex.Message);
-                throw new ActivitiesRepositoryException("Ошибка при получении элемента.", ex);
+                throw new ActivitiesRepositoryException("Ошибка при получении всех элементов.", ex);
+            }
+        }
+        public async Task<ICollection<TypeActivity>> GetAsync()
+        {
+            try
+            {
+                var listModels = await _context.TypeActivities.ToListAsync();
+
+                return listModels;
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex.Message);
+                throw new ActivitiesRepositoryException("Ошибка при получении всех элементов.", ex);
             }
         }
 
-        public void Update(TimeInterval model)
+        public void Update(TypeActivity model)
         {
             try
             {
-                _context.TimeIntervals.Update(model);
+                _context.TypeActivities.Update(model);
                 _context.SaveChanges();
             }
             catch (DbUpdateException ex)
@@ -155,11 +152,11 @@ namespace JournalMVC.Repositories
             }
         }
 
-        public async Task UpdateAsync(TimeInterval model)
+        public async Task UpdateAsync(TypeActivity model)
         {
             try
             {
-                _context.TimeIntervals.Update(model);
+                _context.TypeActivities.Update(model);
                 await _context.SaveChangesAsync();
             }
             catch (DbUpdateException ex)

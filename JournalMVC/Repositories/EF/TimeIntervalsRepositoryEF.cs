@@ -6,24 +6,24 @@ using JournalMVC.Models;
 using JournalMVC.Repositories.Interfaces;
 using Microsoft.EntityFrameworkCore;
 
-namespace JournalMVC.Repositories
+namespace JournalMVC.Repositories.EF
 {
-    public class ActivitiesRepository : IActivitiesRepository
+    public class TimeIntervalsRepositoryEF : ITimeIntervalsRepository
     {
         private readonly ApplicationContext _context;
-        private readonly ILogger<ActivitiesRepository> _logger;
+        private readonly ILogger<TimeIntervalsRepositoryEF> _logger;
 
-        public ActivitiesRepository(ApplicationContext context, ILogger<ActivitiesRepository> logger)
+        public TimeIntervalsRepositoryEF(ApplicationContext context, ILogger<TimeIntervalsRepositoryEF> logger)
         {
             _context = context;
             _logger = logger;
         }
 
-        public void Add(Activity model)
+        public void Add(TimeInterval model)
         {
             try
             {
-                _context.Activities.Add(model);
+                _context.TimeIntervals.Add(model);
                 _context.SaveChanges();
             }
             catch (DbUpdateException ex)
@@ -33,11 +33,11 @@ namespace JournalMVC.Repositories
             }
         }
 
-        public async Task AddAsync(Activity model)
+        public async Task AddAsync(TimeInterval model)
         {
             try
             {
-                await _context.Activities.AddAsync(model);
+                await _context.TimeIntervals.AddAsync(model);
                 await _context.SaveChangesAsync();
             }
             catch (DbUpdateException ex)
@@ -47,11 +47,11 @@ namespace JournalMVC.Repositories
             }
         }
 
-        public void Delete(Activity model)
+        public void Delete(TimeInterval model)
         {
             try
             {
-                _context.Activities.Remove(model);
+                _context.TimeIntervals.Remove(model);
                 _context.SaveChanges();
             }
             catch (DbUpdateException ex)
@@ -61,11 +61,11 @@ namespace JournalMVC.Repositories
             }
         }
 
-        public async Task DeleteAsync(Activity model)
+        public async Task DeleteAsync(TimeInterval model)
         {
             try
             {
-                _context.Activities.Remove(model);
+                _context.TimeIntervals.Remove(model);
                 await _context.SaveChangesAsync();
             }
             catch (DbUpdateException ex)
@@ -75,15 +75,13 @@ namespace JournalMVC.Repositories
             }
         }
 
-        public ICollection<Activity> Get()
+        public ICollection<TimeInterval> Get()
         {
             try
             {
-                var listObjects = _context.Activities.Include(d => d.TimeInterval)
-                                                       .Include(d => d.Type)
-                                                       .ToList();
-                
-                return listObjects;
+                var listModels = _context.TimeIntervals.ToList();
+
+                return listModels;
             }
             catch (Exception ex)
             {
@@ -92,15 +90,13 @@ namespace JournalMVC.Repositories
             }
         }
 
-        public async Task<ICollection<Activity>> GetAsync()
+        public async Task<ICollection<TimeInterval>> GetAsync()
         {
             try
             {
-                var listObjects = await _context.Activities.Include(d => d.TimeInterval)
-                                                       .Include(d => d.Type)
-                                                       .ToListAsync();
+                var listModels = await _context.TimeIntervals.ToListAsync();
 
-                return listObjects;
+                return listModels;
             }
             catch (Exception ex)
             {
@@ -109,11 +105,11 @@ namespace JournalMVC.Repositories
             }
         }
 
-        public Activity? Get(int id)
+        public TimeInterval? Get(int id)
         {
             try
             {
-                var obj = _context.Activities.Find(id);
+                var obj = _context.TimeIntervals.Find(id);
 
                 if (obj != null)
                     return obj;
@@ -127,11 +123,11 @@ namespace JournalMVC.Repositories
             }
         }
 
-        public async Task<Activity?> GetAsync(int id)
+        public async Task<TimeInterval?> GetAsync(int id)
         {
             try
             {
-                var obj = await _context.Activities.FindAsync(id);
+                var obj = await _context.TimeIntervals.FindAsync(id);
 
                 if (obj != null)
                     return obj;
@@ -145,11 +141,11 @@ namespace JournalMVC.Repositories
             }
         }
 
-        public void Update(Activity model)
+        public void Update(TimeInterval model)
         {
             try
             {
-                _context.Activities.Update(model);
+                _context.TimeIntervals.Update(model);
                 _context.SaveChanges();
             }
             catch (DbUpdateException ex)
@@ -159,11 +155,11 @@ namespace JournalMVC.Repositories
             }
         }
 
-        public async Task UpdateAsync(Activity model)
+        public async Task UpdateAsync(TimeInterval model)
         {
             try
             {
-                _context.Activities.Update(model);
+                _context.TimeIntervals.Update(model);
                 await _context.SaveChangesAsync();
             }
             catch (DbUpdateException ex)
