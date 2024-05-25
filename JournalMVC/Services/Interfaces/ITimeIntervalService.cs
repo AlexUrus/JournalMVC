@@ -9,12 +9,5 @@ namespace JournalMVC.Services.Interfaces
         Task<TimeIntervalDTO> GetAsync(int id);
         Task DeleteAsync(int id);
         Task UpdateAsync(TimeIntervalDTO dTO);
-
-        // Sync methods
-        void Add(TimeIntervalDTO dTO);
-        ICollection<TimeIntervalDTO> Get();
-        TimeIntervalDTO Get(int id);
-        void Delete(int id);
-        void Update(TimeIntervalDTO dTO);
     }
 }

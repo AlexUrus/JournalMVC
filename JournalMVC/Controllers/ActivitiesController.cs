@@ -53,7 +53,10 @@ namespace JournalMVC.Controllers
             var activities = await _activityService.GetAsync();
             var timeIntervals = await _timeIntervalsService.GetAsync();
 
-            var filteredTimeIntervals = timeIntervals.Where(ti => !activities.Any(a => a.TimeIntervalId == ti.Id)).ToList();
+            var filteredTimeIntervals = timeIntervals
+                .Where(ti => !activities
+                .Any(a => a.TimeIntervalId == ti.Id))
+                .ToList();
 
             ViewData["TimeIntervals"] = new SelectList(filteredTimeIntervals, "Id", "Interval");
             ViewData["TypeActivities"] = new SelectList(await _typeActivitiesService.GetAsync(), "Id", "Name");
@@ -87,7 +90,6 @@ namespace JournalMVC.Controllers
             var timeIntervals = await _timeIntervalsService.GetAsync();
 
             var filteredTimeIntervals = timeIntervals.Where(ti => !activities.Any(a => a.TimeIntervalId == ti.Id)).ToList();
-
             ViewData["TimeIntervals"] = new SelectList(filteredTimeIntervals, "Id", "Interval", activityDto.TimeIntervalId);
             ViewData["TypeActivities"] = new SelectList(await _typeActivitiesService.GetAsync(), "Id", "Name", activityDto.TypeId);
             return View(activityDto);
@@ -103,23 +105,37 @@ namespace JournalMVC.Controllers
                 return NotFound();
             }
 
-            try
+            if (ModelState.IsValid)
             {
-                await _activityService.UpdateAsync(activityDto);
-            }
-            catch (DbUpdateConcurrencyException)
-            {
-                if (!await ActivityExists(activityDto.Id))
+                try
                 {
-                    return NotFound();
+                    await _activityService.UpdateAsync(activityDto);
                 }
-                else
+                catch (DbUpdateConcurrencyException)
                 {
-                    throw;
+                    if (!await ActivityExists(activityDto.Id))
+                    {
+                        return NotFound();
+                    }
+                    else
+                    {
+                        throw;
+                    }
                 }
+                return RedirectToAction(nameof(Index));
             }
 
-            return RedirectToAction(nameof(Index));
+            var activities = await _activityService.GetAsync();
+            var timeIntervals = await _timeIntervalsService.GetAsync();
+
+            var filteredTimeIntervals = timeIntervals
+                .Where(ti => !activities
+                .Any(a => a.TimeIntervalId == ti.Id))
+                .ToList();
+
+            ViewData["TimeIntervals"] = new SelectList(filteredTimeIntervals, "Id", "Interval", activityDto.TimeIntervalId);
+            ViewData["TypeActivities"] = new SelectList(await _typeActivitiesService.GetAsync(), "Id", "Name", activityDto.TypeId);
+            return View(activityDto);
         }
 
         // GET: Activities/Delete/5

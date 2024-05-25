@@ -11,7 +11,7 @@ namespace JournalMVC.DTO
         public int TimeIntervalId { get; set; }
         public string Description { get; set; } = null!;
 
-        public TypeActivityDTO Type { get; set; } = null!;
-        public TimeIntervalDTO TimeInterval { get; set; } = null!;
+        public TypeActivityDTO? Type { get; set; } = null!;
+        public TimeIntervalDTO? TimeInterval { get; set; } = null!;
     }
 }

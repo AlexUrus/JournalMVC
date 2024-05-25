@@ -1,5 +1,4 @@
 ﻿using AutoMapper;
-using JournalMVC.CustomException;
 using JournalMVC.Database;
 using JournalMVC.DTO;
 using JournalMVC.Models;
@@ -18,20 +17,7 @@ namespace JournalMVC.Repositories.EF
             _context = context;
             _logger = logger;
         }
-        public void Add(TypeActivity model)
-        {
-            try
-            {
-                _context.TypeActivities.Add(model);
-                _context.SaveChanges();
-            }
-            catch (DbUpdateException ex)
-            {
-                _logger.LogError(ex.Message);
-                throw new ActivitiesRepositoryException("Ошибка при добавлении элемента.", ex);
-            }
-        }
-
+       
         public async Task AddAsync(TypeActivity model)
         {
             try
@@ -42,21 +28,7 @@ namespace JournalMVC.Repositories.EF
             catch (DbUpdateException ex)
             {
                 _logger.LogError(ex.Message);
-                throw new ActivitiesRepositoryException("Ошибка при добавлении элемента.", ex);
-            }
-        }
-
-        public void Delete(TypeActivity model)
-        {
-            try
-            {
-                _context.TypeActivities.Remove(model);
-                _context.SaveChanges();
-            }
-            catch (DbUpdateException ex)
-            {
-                _logger.LogError(ex.Message);
-                throw new ActivitiesRepositoryException("Ошибка при удалении элемента.", ex);
+                throw new Exception("Ошибка при добавлении элемента.", ex);
             }
         }
 
@@ -70,27 +42,10 @@ namespace JournalMVC.Repositories.EF
             catch (DbUpdateException ex)
             {
                 _logger.LogError(ex.Message);
-                throw new ActivitiesRepositoryException("Ошибка при удалении элемента.", ex);
+                throw new Exception("Ошибка при удалении элемента.", ex);
             }
         }
 
-        public TypeActivity? Get(int id)
-        {
-            try
-            {
-                var obj = _context.TypeActivities.Find(id);
-
-                if (obj != null)
-                    return obj;
-                else
-                    return null;
-            }
-            catch (DbUpdateException ex)
-            {
-                _logger.LogError(ex.Message);
-                throw new ActivitiesRepositoryException("Ошибка при получении элемента.", ex);
-            }
-        }
         public async Task<TypeActivity?> GetAsync(int id)
         {
             try
@@ -105,24 +60,10 @@ namespace JournalMVC.Repositories.EF
             catch (DbUpdateException ex)
             {
                 _logger.LogError(ex.Message);
-                throw new ActivitiesRepositoryException("Ошибка при получении элемента.", ex);
+                throw new Exception("Ошибка при получении элемента.", ex);
             }
         }
 
-        public ICollection<TypeActivity> Get()
-        {
-            try
-            {
-                var listModels = _context.TypeActivities.ToList();
-
-                return listModels;
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError(ex.Message);
-                throw new ActivitiesRepositoryException("Ошибка при получении всех элементов.", ex);
-            }
-        }
         public async Task<ICollection<TypeActivity>> GetAsync()
         {
             try
@@ -134,21 +75,7 @@ namespace JournalMVC.Repositories.EF
             catch (Exception ex)
             {
                 _logger.LogError(ex.Message);
-                throw new ActivitiesRepositoryException("Ошибка при получении всех элементов.", ex);
-            }
-        }
-
-        public void Update(TypeActivity model)
-        {
-            try
-            {
-                _context.TypeActivities.Update(model);
-                _context.SaveChanges();
-            }
-            catch (DbUpdateException ex)
-            {
-                _logger.LogError(ex.Message);
-                throw new ActivitiesRepositoryException("Ошибка при обновлении элемента.", ex);
+                throw new Exception("Ошибка при получении всех элементов.", ex);
             }
         }
 
@@ -162,7 +89,7 @@ namespace JournalMVC.Repositories.EF
             catch (DbUpdateException ex)
             {
                 _logger.LogError(ex.Message);
-                throw new ActivitiesRepositoryException("Ошибка при обновлении элемента.", ex);
+                throw new Exception("Ошибка при обновлении элемента.", ex);
             }
         }
     }

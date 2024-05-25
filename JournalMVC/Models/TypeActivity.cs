@@ -2,9 +2,8 @@
 
 namespace JournalMVC.Models
 {
-    public class TypeActivity : IEntity
+    public class TypeActivity 
     {
-        [Key]
         public int Id { get; set; }
         public string Name { get; set; }
     }

@@ -28,7 +28,6 @@ namespace JournalMVC.Services
 
             if (activity == null)
             {
-                // Handle the case where the activity with the given ID is not found
                 return null;
             }
 

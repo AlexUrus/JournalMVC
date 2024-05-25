@@ -3,15 +3,10 @@ using System.ComponentModel.DataAnnotations.Schema;
 
 namespace JournalMVC.Models
 {
-    public class Activity : IEntity
+    public class Activity
     {
-        [Key]
         public int Id { get; set; }
-
-        [ForeignKey(nameof(Type))]
         public int TypeId { get; set; }
-
-        [ForeignKey(nameof(TimeInterval))]
         public int TimeIntervalId { get; set; }
         public string Description { get; set; }
         

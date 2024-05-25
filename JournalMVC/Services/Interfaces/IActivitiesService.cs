@@ -9,12 +9,5 @@ namespace JournalMVC.Services.Interfaces
         Task<ActivityDTO> GetAsync(int id);
         Task DeleteAsync(int id);
         Task UpdateAsync(ActivityDTO dTO);
-
-        // Sync methods
-        void Add(ActivityDTO dTO);
-        ICollection<ActivityDTO> Get();
-        ActivityDTO Get(int id);
-        void Delete(int id);
-        void Update(ActivityDTO dTO);
     }
 }

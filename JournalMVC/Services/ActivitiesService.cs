@@ -17,36 +17,6 @@ namespace JournalMVC.Services
             _mapper = mapper;
         }
 
-        public void Add(ActivityDTO dTO)
-        {
-            var obj = _mapper.Map<Activity>(dTO);
-            _activityRepository.Add(obj);
-        }
-
-        public ICollection<ActivityDTO> Get()
-        {
-            var obj = _activityRepository.Get();
-            return _mapper.Map<ICollection<ActivityDTO>>(obj);
-        }
-
-        public ActivityDTO Get(int id)
-        {
-            var obj = _activityRepository.Get(id);
-            return _mapper.Map<ActivityDTO>(obj);
-        }
-
-        public void Delete(int id)
-        {
-            var obj = _activityRepository.Get(id);
-            _activityRepository.Delete(obj);
-        }
-
-        public void Update(ActivityDTO dTO)
-        {
-            var obj = _mapper.Map<Activity>(dTO);
-            _activityRepository.Update(obj);
-        }
-
         public async Task AddAsync(ActivityDTO dTO)
         {
             var obj = _mapper.Map<Activity>(dTO);

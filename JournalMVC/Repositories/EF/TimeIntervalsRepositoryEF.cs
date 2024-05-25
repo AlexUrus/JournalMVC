@@ -1,5 +1,4 @@
 ﻿using AutoMapper;
-using JournalMVC.CustomException;
 using JournalMVC.Database;
 using JournalMVC.DTO;
 using JournalMVC.Models;
@@ -19,20 +18,6 @@ namespace JournalMVC.Repositories.EF
             _logger = logger;
         }
 
-        public void Add(TimeInterval model)
-        {
-            try
-            {
-                _context.TimeIntervals.Add(model);
-                _context.SaveChanges();
-            }
-            catch (DbUpdateException ex)
-            {
-                _logger.LogError(ex.Message);
-                throw new ActivitiesRepositoryException("Ошибка при добавлении элемента.", ex);
-            }
-        }
-
         public async Task AddAsync(TimeInterval model)
         {
             try
@@ -43,21 +28,7 @@ namespace JournalMVC.Repositories.EF
             catch (DbUpdateException ex)
             {
                 _logger.LogError(ex.Message);
-                throw new ActivitiesRepositoryException("Ошибка при добавлении элемента.", ex);
-            }
-        }
-
-        public void Delete(TimeInterval model)
-        {
-            try
-            {
-                _context.TimeIntervals.Remove(model);
-                _context.SaveChanges();
-            }
-            catch (DbUpdateException ex)
-            {
-                _logger.LogError(ex.Message);
-                throw new ActivitiesRepositoryException("Ошибка при удалении элемента.", ex);
+                throw new Exception("Ошибка при добавлении элемента.", ex);
             }
         }
 
@@ -71,22 +42,7 @@ namespace JournalMVC.Repositories.EF
             catch (DbUpdateException ex)
             {
                 _logger.LogError(ex.Message);
-                throw new ActivitiesRepositoryException("Ошибка при удалении элемента.", ex);
-            }
-        }
-
-        public ICollection<TimeInterval> Get()
-        {
-            try
-            {
-                var listModels = _context.TimeIntervals.ToList();
-
-                return listModels;
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError(ex.Message);
-                throw new ActivitiesRepositoryException("Ошибка при получении всех элементов.", ex);
+                throw new Exception("Ошибка при удалении элемента.", ex);
             }
         }
 
@@ -101,25 +57,7 @@ namespace JournalMVC.Repositories.EF
             catch (Exception ex)
             {
                 _logger.LogError(ex.Message);
-                throw new ActivitiesRepositoryException("Ошибка при получении всех элементов.", ex);
-            }
-        }
-
-        public TimeInterval? Get(int id)
-        {
-            try
-            {
-                var obj = _context.TimeIntervals.Find(id);
-
-                if (obj != null)
-                    return obj;
-                else
-                    return null;
-            }
-            catch (DbUpdateException ex)
-            {
-                _logger.LogError(ex.Message);
-                throw new ActivitiesRepositoryException("Ошибка при получении элемента.", ex);
+                throw new Exception("Ошибка при получении всех элементов.", ex);
             }
         }
 
@@ -137,21 +75,7 @@ namespace JournalMVC.Repositories.EF
             catch (DbUpdateException ex)
             {
                 _logger.LogError(ex.Message);
-                throw new ActivitiesRepositoryException("Ошибка при получении элемента.", ex);
-            }
-        }
-
-        public void Update(TimeInterval model)
-        {
-            try
-            {
-                _context.TimeIntervals.Update(model);
-                _context.SaveChanges();
-            }
-            catch (DbUpdateException ex)
-            {
-                _logger.LogError(ex.Message);
-                throw new ActivitiesRepositoryException("Ошибка при обновлении элемента.", ex);
+                throw new Exception("Ошибка при получении элемента.", ex);
             }
         }
 
@@ -165,7 +89,7 @@ namespace JournalMVC.Repositories.EF
             catch (DbUpdateException ex)
             {
                 _logger.LogError(ex.Message);
-                throw new ActivitiesRepositoryException("Ошибка при обновлении элемента.", ex);
+                throw new Exception("Ошибка при обновлении элемента.", ex);
             }
         }
     }
