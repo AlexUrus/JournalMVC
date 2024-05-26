@@ -33,15 +33,20 @@ namespace JournalMVC.Services
 
             var filteredActivities = activities.Where(a => a.TypeId == activity.TypeId);
 
-            var averageTimePerDay = filteredActivities
+            var totalTime = filteredActivities
                 .Select(a => (a.TimeInterval.EndActivity - a.TimeInterval.StartActivity).TotalMinutes)
-                .Average();
+                .Sum();
+            var averageTimePerDay = filteredActivities
+            .GroupBy(a => a.DailyRecordId) 
+            .Select(g => g.Sum(a => (a.TimeInterval.EndActivity - a.TimeInterval.StartActivity).TotalMinutes))
+            .Average();
 
             var details = new DetailsActivitiesDTO()
             {
                 Id = id,
                 TypeActivity = activity.Type.Name,
-                AverrageTimePerDay = TimeSpan.FromMinutes(averageTimePerDay)
+                AverrageTimePerDay = TimeSpan.FromMinutes(averageTimePerDay),
+                TotalTime = TimeSpan.FromMinutes(totalTime)
             };
 
             return details;

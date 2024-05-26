@@ -1,4 +1,4 @@
-namespace JournalMVC.Models
+namespace JournalMVC.DTO
 {
     public class ErrorViewModel
     {

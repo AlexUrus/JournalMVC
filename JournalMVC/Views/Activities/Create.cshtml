@@ -2,6 +2,7 @@
 
 @{
     ViewData["Title"] = "Create";
+    var selectedDate = ViewBag.SelectedDate ?? DateTime.Now;
 }
 
 <h1>Create</h1>
@@ -18,13 +19,14 @@
             </div>
             <div class="form-group">
                 <label asp-for="TimeInterval" class="control-label"></label>
-                <select asp-for="TimeIntervalId" class ="form-control" asp-items="ViewBag.TimeIntervals"></select>
+                <select asp-for="TimeIntervalId" class="form-control" asp-items="ViewBag.TimeIntervals"></select>
             </div>
             <div class="form-group">
                 <label asp-for="Description" class="control-label"></label>
                 <input asp-for="Description" class="form-control" />
                 <span asp-validation-for="Description" class="text-danger"></span>
             </div>
+            <input type="hidden" name="selectedDate" value="@selectedDate.ToString("yyyy-MM-ddTHH:mm:ss")" />
             <div class="form-group">
                 <input type="submit" value="Create" class="btn btn-primary" />
             </div>
@@ -37,5 +39,7 @@
 </div>
 
 @section Scripts {
-    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
 }

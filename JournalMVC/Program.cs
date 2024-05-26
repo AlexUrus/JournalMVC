@@ -26,6 +26,12 @@ namespace JournalMVC
 
             var app = builder.Build();
 
+            using (var scope = app.Services.CreateScope())
+            {
+                var db = scope.ServiceProvider.GetRequiredService<ApplicationContext>();
+                db.Database.Migrate();
+            }
+
             if (!app.Environment.IsDevelopment())
             {
                 app.UseExceptionHandler("/Home/Error");
@@ -57,6 +63,8 @@ namespace JournalMVC
             services.AddScoped<IActivitiesRepository, ActivitiesRepositoryEF>();
             services.AddScoped<ITimeIntervalsRepository, TimeIntervalsRepositoryEF>();
             services.AddScoped<ITypeActivitiesRepository, TypeActivitiesRepositoryEF>();
+            services.AddScoped<IDailyRecordRepository, DailyRecordRepositoryEF>();
+            services.AddScoped<IMonthlyRecordRepository, MonthlyRecordRepositoryEF>();
         }
         public static void AddRepositoriesADO(IServiceCollection services)
         {
@@ -67,10 +75,13 @@ namespace JournalMVC
 
         public static void AddServices(IServiceCollection services)
         {
+            services.AddHostedService<InitializationService>();
             services.AddScoped<IActivitiesService, ActivitiesService>();
             services.AddScoped<ITimeIntervalsService, TimeIntervalsService>();
             services.AddScoped<ITypeActivitiesService, TypeActivitiesService>();
             services.AddScoped<IStatisticService, StatisticService>();
+            services.AddScoped<IDailyRecordService, DailyRecordService>();
+            services.AddScoped<IMonthlyRecordService, MonthlyRecordService>();
         }
     }
 }

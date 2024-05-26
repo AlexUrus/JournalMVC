@@ -1,15 +1,8 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
-using JournalMVC.Database;
-using JournalMVC.Models;
 using JournalMVC.Services.Interfaces;
 using JournalMVC.DTO;
-using JournalMVC.Services;
 
 namespace JournalMVC.Controllers
 {
@@ -27,10 +20,14 @@ namespace JournalMVC.Controllers
         }
 
         // GET: Activities
-        public async Task<IActionResult> Index()
+        public async Task<IActionResult> Index(DateTime? date)
         {
-            var activities = await _activityService.GetAsync();
+            DateTime selectedDate = date ?? DateTime.Now;
+            ViewBag.SelectedDate = selectedDate;
+
+            var activities = await _activityService.GetActivitiesByDateAsync(selectedDate);
             activities = activities.OrderBy(x => x.TimeInterval.StartActivity).ToList();
+
             return View(activities);
         }
 
@@ -48,9 +45,9 @@ namespace JournalMVC.Controllers
         }
 
         // GET: Activities/Create
-        public async Task<IActionResult> Create()
+        public async Task<IActionResult> Create(DateTime date)
         {
-            var activities = await _activityService.GetAsync();
+            var activities = await _activityService.GetActivitiesByDateAsync(date);
             var timeIntervals = await _timeIntervalsService.GetAsync();
 
             var filteredTimeIntervals = timeIntervals
@@ -60,16 +57,18 @@ namespace JournalMVC.Controllers
 
             ViewData["TimeIntervals"] = new SelectList(filteredTimeIntervals, "Id", "Interval");
             ViewData["TypeActivities"] = new SelectList(await _typeActivitiesService.GetAsync(), "Id", "Name");
+            ViewBag.SelectedDate = date;
             return View();
         }
 
         // POST: Activities/Create
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("Id,TypeId,TimeIntervalId,Description")] ActivityDTO activityDto)
+        public async Task<IActionResult> Create([Bind("Id,TypeId,TimeIntervalId,Description")] ActivityDTO activityDto, string selectedDate)
         {
-            await _activityService.AddAsync(activityDto);
-            return RedirectToAction(nameof(Index));
+            DateTime date = DateTime.Parse(selectedDate);
+            await _activityService.CreateActivity(activityDto, date.Month, date.Day);
+            return RedirectToAction(nameof(Index), new { date });
         }
 
         // GET: Activities/Edit/5

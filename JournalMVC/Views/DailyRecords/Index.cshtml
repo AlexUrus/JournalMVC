@@ -1,0 +1,62 @@
+﻿@model IEnumerable<JournalMVC.DTO.DailyRecordDTO>
+
+@{
+    ViewData["Title"] = "Index";
+}
+
+<h1>Index</h1>
+
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+    <title>Таблица</title>
+    <style type="text/css">
+        TABLE {
+            width: 100%; 
+            border-collapse: collapse; 
+        }
+
+        TD, TH {
+            padding: 8px; 
+            border: 1px solid black; 
+            text-align: center; 
+        }
+
+        TH {
+            background: #b0e0e6;
+        }
+    </style>
+</head>
+<body>
+    <table>
+        <thead>
+            <tr>
+                <th>Day</th>
+                <th>Month</th>
+                <th>Activities</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var dailyRecord in Model)
+            {
+                <tr>
+                    <td>@dailyRecord.Day</td>
+                    <td>@(dailyRecord.MonthlyRecord != null ? dailyRecord.MonthlyRecord.Month.ToString() : "N/A")</td>
+                    <td>
+                        <ul>
+                            @foreach (var activity in dailyRecord.Activities)
+                            {
+                                <li>@activity.Type.Name</li>
+                                <li>@activity.TimeInterval.Interval</li>
+                                <li>@activity.Description</li>
+                                @if (activity != dailyRecord.Activities.Last()) 
+                                {
+                                    <li style="border-bottom: 1px solid black;"></li>
+                                }
+                            }
+                        </ul>
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+</body>

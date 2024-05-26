@@ -2,13 +2,20 @@
 
 @{
     ViewData["Title"] = "Index";
+    var selectedDate = ViewBag.SelectedDate ?? DateTime.Now;
 }
 
 <h1>Index</h1>
 
 <p>
-    <a asp-action="Create">Create New</a>
+    <a asp-action="Create" asp-route-date="@selectedDate.ToString("yyyy-MM-ddTHH:mm:ss")">Create New</a>
 </p>
+
+<p>
+    <input type="date" id="activityDate" value="@selectedDate.ToString("yyyy-MM-dd")" />
+    <button type="button" id="filterButton">Filter</button>
+</p>
+
 <table class="table">
     <thead>
         <tr>
@@ -24,24 +31,36 @@
             <th></th>
         </tr>
     </thead>
-    <tbody>
-@foreach (var item in Model) {
-        <tr>
-            <td>
-                @Html.DisplayFor(modelItem => item.Description)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.Type.Name)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.TimeInterval.Interval)
-            </td>
-            <td>
-                <a asp-action="Edit" asp-route-id="@item.Id">Edit</a> |
-                <a asp-action="Details" asp-route-id="@item.Id">Details</a> |
-                <a asp-action="Delete" asp-route-id="@item.Id">Delete</a>
-            </td>
-        </tr>
-}
+    <tbody id="activityTableBody">
+        @foreach (var item in Model)
+        {
+            <tr>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Description)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Type.Name)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.TimeInterval.Interval)
+                </td>
+                <td>
+                    <a asp-action="Edit" asp-route-id="@item.Id">Edit</a> |
+                    <a asp-action="Details" asp-route-id="@item.Id">Details</a> |
+                    <a asp-action="Delete" asp-route-id="@item.Id">Delete</a>
+                </td>
+            </tr>
+        }
     </tbody>
 </table>
+
+@section Scripts {
+    <script>
+        document.getElementById("filterButton").addEventListener("click", function () {
+            var selectedDate = document.getElementById("activityDate").value;
+            if (selectedDate) {
+                window.location.href = '@Url.Action("Index", "Activities")?date=' + selectedDate;
+            }
+        });
+    </script>
+}

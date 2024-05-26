@@ -8,10 +8,11 @@ namespace JournalMVC.Models
         public int Id { get; set; }
         public int TypeId { get; set; }
         public int TimeIntervalId { get; set; }
-        public string Description { get; set; }
-        
+        public int DailyRecordId { get; set; } 
+        public string Description { get; set; } = null!;
 
-        public TypeActivity Type { get; set; }
-        public TimeInterval TimeInterval { get; set; }
+        public TypeActivity Type { get; set; } = null!;
+        public TimeInterval TimeInterval { get; set; } = null!;
+        public DailyRecord DailyRecord { get; set; } = null!;
     }
 }
