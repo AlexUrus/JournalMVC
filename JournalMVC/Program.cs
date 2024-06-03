@@ -46,8 +46,8 @@ namespace JournalMVC
             app.UseAuthorization();
 
             app.MapControllerRoute(
-                name: "Activities",
-                pattern: "{controller=Activities}/{action=Index}/{id?}");
+                name: "DailyRecords",
+                pattern: "{controller=DailyRecords}/{action=Index}/{id?}");
 
             app.Run();
         }

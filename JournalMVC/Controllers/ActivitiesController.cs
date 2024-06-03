@@ -86,9 +86,11 @@ namespace JournalMVC.Controllers
             }
 
             var activities = await _activityService.GetAsync();
+            var activitiesPerCurrDay = activities.Where(a => a.DailyRecordId == activityDto.Id).ToList();
             var timeIntervals = await _timeIntervalsService.GetAsync();
 
-            var filteredTimeIntervals = timeIntervals.Where(ti => !activities.Any(a => a.TimeIntervalId == ti.Id)).ToList();
+            var filteredTimeIntervals = timeIntervals.Where(ti => !activitiesPerCurrDay.Any(a => a.TimeIntervalId == ti.Id)).ToList();
+            filteredTimeIntervals.Add(timeIntervals.Where(t => t.Id == activityDto.TimeIntervalId).First());
             ViewData["TimeIntervals"] = new SelectList(filteredTimeIntervals, "Id", "Interval", activityDto.TimeIntervalId);
             ViewData["TypeActivities"] = new SelectList(await _typeActivitiesService.GetAsync(), "Id", "Name", activityDto.TypeId);
             return View(activityDto);

@@ -5,28 +5,28 @@
     var selectedDate = ViewBag.SelectedDate ?? DateTime.Now;
 }
 
-<h1>Index</h1>
+<h1>Занятия</h1>
 
 <p>
-    <a asp-action="Create" asp-route-date="@selectedDate.ToString("yyyy-MM-ddTHH:mm:ss")">Create New</a>
+    <a asp-action="Create" asp-route-date="@selectedDate.ToString("yyyy-MM-ddTHH:mm:ss")">Создать занятие</a>
 </p>
 
 <p>
     <input type="date" id="activityDate" value="@selectedDate.ToString("yyyy-MM-dd")" />
-    <button type="button" id="filterButton">Filter</button>
+    <button type="button" id="filterButton">Выбрать дату</button>
 </p>
 
 <table class="table">
     <thead>
         <tr>
             <th>
-                @Html.DisplayNameFor(model => model.Description)
+                Описание
             </th>
             <th>
-                @Html.DisplayNameFor(model => model.Type)
+                Тип
             </th>
             <th>
-                @Html.DisplayNameFor(model => model.TimeInterval)
+                Временной интервал
             </th>
             <th></th>
         </tr>
@@ -45,9 +45,9 @@
                     @Html.DisplayFor(modelItem => item.TimeInterval.Interval)
                 </td>
                 <td>
-                    <a asp-action="Edit" asp-route-id="@item.Id">Edit</a> |
-                    <a asp-action="Details" asp-route-id="@item.Id">Details</a> |
-                    <a asp-action="Delete" asp-route-id="@item.Id">Delete</a>
+                    <a asp-action="Edit" asp-route-id="@item.Id">Изменить</a> |
+                    <a asp-action="Details" asp-route-id="@item.Id">Детали</a> |
+                    <a asp-action="Delete" asp-route-id="@item.Id">Удалить</a>
                 </td>
             </tr>
         }
