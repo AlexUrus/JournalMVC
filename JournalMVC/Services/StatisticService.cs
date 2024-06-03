@@ -7,18 +7,10 @@ namespace JournalMVC.Services
 {
     public class StatisticService : IStatisticService
     {
-        private readonly IMapper _mapper;
         private readonly IActivitiesRepository _activityRepository;
-        private readonly ITimeIntervalsRepository _timeIntervalsRepository;
-        private readonly ITypeActivitiesRepository _typeActivitiesRepository;
-
-        public StatisticService(IMapper mapper, IActivitiesRepository activityRepository, ITimeIntervalsRepository timeIntervalsRepository, 
-            ITypeActivitiesRepository typeActivitiesRepository)
+        public StatisticService(IActivitiesRepository activityRepository)
         {
-            _mapper = mapper;
             _activityRepository = activityRepository;
-            _timeIntervalsRepository = timeIntervalsRepository;
-            _typeActivitiesRepository = typeActivitiesRepository;
         }
 
         public async Task<DetailsActivitiesDTO?> GetDetailsActivitiesDTOAsync(int id)
@@ -37,9 +29,9 @@ namespace JournalMVC.Services
                 .Select(a => (a.TimeInterval.EndActivity - a.TimeInterval.StartActivity).TotalMinutes)
                 .Sum();
             var averageTimePerDay = filteredActivities
-            .GroupBy(a => a.DailyRecordId) 
-            .Select(g => g.Sum(a => (a.TimeInterval.EndActivity - a.TimeInterval.StartActivity).TotalMinutes))
-            .Average();
+                .GroupBy(a => a.DailyRecordId) 
+                .Select(g => g.Sum(a => (a.TimeInterval.EndActivity - a.TimeInterval.StartActivity).TotalMinutes))
+                .Average();
 
             var details = new DetailsActivitiesDTO()
             {

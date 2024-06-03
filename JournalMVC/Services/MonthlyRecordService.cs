@@ -26,12 +26,13 @@ namespace JournalMVC.Services
 
             if (currMonthlyRecordDto == null)
             {
-                currMonthlyRecordDto = new MonthlyRecordDTO { Month = month };
-                await _monthlyRecordRepository.AddAsync(_mapper.Map<MonthlyRecord>(currMonthlyRecordDto));
-                currMonthlyRecordDto = await GetOrCreateMonthlyRecord(month);
+                var newMonthlyRecord = new MonthlyRecord { Month = month };
+                await _monthlyRecordRepository.AddAsync(newMonthlyRecord);
+                newMonthlyRecord = await _monthlyRecordRepository.GetAsync(newMonthlyRecord.Id);
+                currMonthlyRecordDto = _mapper.Map<MonthlyRecordDTO>(newMonthlyRecord);
             }
 
-            return _mapper.Map<MonthlyRecordDTO>(await _monthlyRecordRepository.GetAsync(currMonthlyRecordDto.Id));
+            return currMonthlyRecordDto;
         }
 
     }

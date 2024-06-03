@@ -33,16 +33,17 @@ namespace JournalMVC.Services
 
             if (currDailyRecordDto == null)
             {
-                currDailyRecordDto = new DailyRecordDTO
+                var newDailyRecord = new DailyRecord
                 {
                     Day = day,
                     MonthlyRecordId = monthlyRecordId
                 };
-                await _dailyRecordRepository.AddAsync(_mapper.Map<DailyRecord>(currDailyRecordDto));
-                currDailyRecordDto = await GetOrCreateDailyRecord(monthlyRecordId, day);
+                await _dailyRecordRepository.AddAsync(newDailyRecord);
+                newDailyRecord = await _dailyRecordRepository.GetAsync(newDailyRecord.Id);
+                currDailyRecordDto = _mapper.Map<DailyRecordDTO>(newDailyRecord);
             }
 
-            return _mapper.Map<DailyRecordDTO>(await _dailyRecordRepository.GetAsync(currDailyRecordDto.Id));
+            return currDailyRecordDto;
         }
     }
 }
